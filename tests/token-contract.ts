@@ -1,12 +1,13 @@
 import * as anchor from "@coral-xyz/anchor";
-import { Program } from "@coral-xyz/anchor";
+import {Program} from "@coral-xyz/anchor";
+// @ts-ignore
 import {TokenContract} from "../target/types/token_contract";
 import {
-  createAssociatedTokenAccountInstruction,
-  createInitializeMintInstruction,
-  getAssociatedTokenAddress,
-  MINT_SIZE,
-  TOKEN_PROGRAM_ID,
+    createAssociatedTokenAccountInstruction,
+    createInitializeMintInstruction,
+    getAssociatedTokenAddress,
+    MINT_SIZE,
+    TOKEN_PROGRAM_ID,
 } from "@solana/spl-token";
 import {assert} from "chai";
 
@@ -76,6 +77,7 @@ describe("token-contract", () => {
             .rpc();
         console.log("Your transaction signature ", mint_tx)
         // Get minted token amount on the ATA for our anchor wallet
+        // @ts-ignore
         const minted = (await program.provider.connection.getParsedAccountInfo(associatedTokenAccount)).value.data.parsed.info.tokenAmount.amount;
         assert.equal(minted, 10);
     });
@@ -108,6 +110,7 @@ describe("token-contract", () => {
         })
             .rpc();
         // Get minted token amount on the ATA for our anchor wallet
+        // @ts-ignore
         const minted = (await program.provider.connection.getParsedAccountInfo(associatedTokenAccount)).value.data.parsed.info.tokenAmount.amount;
         assert.equal(minted, 5);
 
