@@ -1,5 +1,5 @@
-import * as anchor from "@project-serum/anchor";
-import {Program} from "@project-serum/anchor";
+import * as anchor from "@coral-xyz/anchor";
+import { Program } from "@coral-xyz/anchor";
 import {TokenContract} from "../target/types/token_contract";
 import {
   createAssociatedTokenAccountInstruction,
@@ -19,6 +19,12 @@ describe("token-contract", () => {
     const mintKey: anchor.web3.Keypair = anchor.web3.Keypair.generate();
     // AssociatedtokenAccount for anchor's workspace wallet
     let associatedTokenAccount = undefined;
+
+    it("Is initialized!", async () => {
+        // Add your test here.
+        const tx = await program.methods.initialize().rpc();
+        console.log("Your transaction signature", tx);
+    });
 
     it("Mint a token", async () => {
         // Get anchor's wallets public key

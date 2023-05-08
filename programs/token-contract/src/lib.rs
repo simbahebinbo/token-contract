@@ -2,11 +2,16 @@ use anchor_lang::prelude::*;
 use anchor_spl::token;
 use anchor_spl::token::{Mint, MintTo, Token, Transfer};
 
-declare_id!("DRuSJ4GGtkbxN72vmpoemajxSmgQZgsrfSm6b38vqv2t");
+declare_id!("Fg6PaFpoGXkYsidMpWTK6W2BeZ7FEfcYkg476zPFsLnS");
 
 #[program]
 pub mod token_contract {
     use super::*;
+
+
+    pub fn initialize(ctx: Context<Initialize>) -> Result<()> {
+        Ok(())
+    }
 
     pub fn mint_token(ctx: Context<MintToken>) -> Result<()> {
         // create the MintTo struct for our context
@@ -47,6 +52,11 @@ pub mod token_contract {
     }
 }
 
+
+#[derive(Accounts)]
+pub struct Initialize {}
+
+
 #[derive(Accounts)]
 pub struct MintToken<'info> {
     pub token_program: Program<'info, Token>,
@@ -78,3 +88,5 @@ pub struct TransferToken<'info> {
     #[account(mut)]
     pub from_authority: Signer<'info>,
 }
+
+
