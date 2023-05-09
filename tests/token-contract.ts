@@ -13,25 +13,27 @@ import {assert} from "chai";
 
 describe("token-contract", () => {
     // Configure the client to use the local cluster.
-    anchor.setProvider(anchor.AnchorProvider.env());
+    let provider = anchor.AnchorProvider.env();
+    let connection = provider.connection;
+    anchor.setProvider(provider);
     // Get the TokenContract struct from the contract
     const program = anchor.workspace.TokenContract as Program<TokenContract>;
     // Generate a random keypair that will represent out token
     const mintKey: anchor.web3.Keypair = anchor.web3.Keypair.generate();
-    // AssociatedtokenAccount for anchor's workspace wallet
+    // AssociatedTokenAccount for anchor's workspace wallet
     let associatedTokenAccount = undefined;
 
-    it("Is initialized!", async () => {
+    it("Initialized!", async () => {
         // Add your test here.
-        const tx = await program.methods.initialize().rpc();
-        console.log("Your transaction signature", tx);
+        const tx = await program.methods.initialize().accounts({}).rpc();
+        console.log("initialize transaction signature", tx);
     });
 
-    it("Mint a token", async () => {
+    it("Mint Token", async () => {
         // Get anchor's wallets public key
-        const key = anchor.AnchorProvider.env().wallet.publicKey;
+        const key = provider.wallet.publicKey;
         // Gets the amount of SOL needed to pay rent for out Token Mint
-        const lamports: number = await program.provider.connection.getMinimumBalanceForRentExemption(
+        const lamports: number = await connection.getMinimumBalanceForRentExemption(
             MINT_SIZE
         );
         // Get the address of the associated token account for a given mint and owner
@@ -59,10 +61,10 @@ describe("token-contract", () => {
             )
         );
         // sends and creates the transaction(mint key is the signer)
-        const res = await anchor.AnchorProvider.env().sendAndConfirm(mint_tx, [mintKey]);
+        const res = await provider.sendAndConfirm(mint_tx, [mintKey]);
 
         console.log(
-            await program.provider.connection.getParsedAccountInfo(mintKey.publicKey)
+            await connection.getParsedAccountInfo(mintKey.publicKey)
         );
         console.log("Account: ", res);
         console.log("Mint key: ", mintKey.publicKey.toString());
@@ -75,19 +77,19 @@ describe("token-contract", () => {
             authority: key,
         })
             .rpc();
-        console.log("Your transaction signature ", mint_tx)
+        console.log("mint_token transaction signature ", mint_tx)
         // Get minted token amount on the ATA for our anchor wallet
         // @ts-ignore
-        const minted = (await program.provider.connection.getParsedAccountInfo(associatedTokenAccount)).value.data.parsed.info.tokenAmount.amount;
+        const minted = (await connection.getParsedAccountInfo(associatedTokenAccount)).value.data.parsed.info.tokenAmount.amount;
         assert.equal(minted, 10);
     });
 
-    it("Transfer token", async () => {
+    it("Transfer Token", async () => {
         // Get anchor's wallets public key
-        const myWallet = anchor.AnchorProvider.env().wallet.publicKey;
-        // Wallet that eill receive the token
+        const myWallet = provider.wallet.publicKey;
+        // Wallet that will receive the token
         const toWallet: anchor.web3.Keypair = anchor.web3.Keypair.generate();
-        // The ATA for a token on the To wallet(but might not exsist yet)
+        // The ATA for a token on the To wallet(but might not exist yet)
         const toATA = await getAssociatedTokenAddress(
             mintKey.publicKey,
             toWallet.publicKey
@@ -100,7 +102,7 @@ describe("token-contract", () => {
             )
         );
         // Sends and create the transaction
-        await anchor.AnchorProvider.env().sendAndConfirm(mint_tx, []);
+        await provider.sendAndConfirm(mint_tx, []);
         // Executes our transfer smart contract
         await program.methods.transferToken().accounts({
             tokenProgram: TOKEN_PROGRAM_ID,
@@ -111,8 +113,7 @@ describe("token-contract", () => {
             .rpc();
         // Get minted token amount on the ATA for our anchor wallet
         // @ts-ignore
-        const minted = (await program.provider.connection.getParsedAccountInfo(associatedTokenAccount)).value.data.parsed.info.tokenAmount.amount;
-        assert.equal(minted, 5);
-
+        const transferred = (await connection.getParsedAccountInfo(associatedTokenAccount)).value.data.parsed.info.tokenAmount.amount;
+        assert.equal(transferred, 5);
     });
 });

@@ -76,14 +76,17 @@ pub struct MintToken<'info> {
 #[derive(Accounts)]
 pub struct TransferToken<'info> {
     pub token_program: Program<'info, Token>,
+
     /// CHECK: This is not dangerous because we don't read or write from this account
     #[account(mut)]
     // taking tokens from this ATA
     pub from: UncheckedAccount<'info>,
+
     /// CHECK: This is not dangerous because we don't read or write from this account
     #[account(mut)]
     // sending tokens to this ATA
-    to: UncheckedAccount<'info>,
+    pub to: UncheckedAccount<'info>,
+
     /// CHECK: This is not dangerous because we don't read or write from this account
     #[account(mut)]
     pub from_authority: Signer<'info>,
