@@ -31,7 +31,7 @@ describe("token-contract", () => {
 
     it("Mint Token", async () => {
         // Get anchor's wallets public key
-        const key = provider.wallet.publicKey;
+        const userPubKey = provider.wallet.publicKey;
         // Gets the amount of SOL needed to pay rent for out Token Mint
         const lamports: number = await connection.getMinimumBalanceForRentExemption(
             MINT_SIZE
@@ -39,13 +39,13 @@ describe("token-contract", () => {
         // Get the address of the associated token account for a given mint and owner
         associatedTokenAccount = await getAssociatedTokenAddress(
             mintKey.publicKey,
-            key
+            userPubKey
         );
         // Fires a list of instructions
         const mint_tx = new anchor.web3.Transaction().add(
             // Use anchor to create an account from the mint key(token) that we created
             anchor.web3.SystemProgram.createAccount({
-                fromPubkey: key,
+                fromPubkey: userPubKey,
                 newAccountPubkey: mintKey.publicKey,
                 space: MINT_SIZE,
                 programId: TOKEN_PROGRAM_ID,
@@ -53,11 +53,11 @@ describe("token-contract", () => {
             }),
             // A transaction to create our mint account that is controlled by our anchor wallet
             createInitializeMintInstruction(
-                mintKey.publicKey, 0, key, key
+                mintKey.publicKey, 0, userPubKey, userPubKey
             ),
             // Create the ATA account that is associated with our mint on our anchor wallet
             createAssociatedTokenAccountInstruction(
-                key, associatedTokenAccount, key, mintKey.publicKey
+                userPubKey, associatedTokenAccount, userPubKey, mintKey.publicKey
             )
         );
         // sends and creates the transaction(mint key is the signer)
@@ -68,16 +68,15 @@ describe("token-contract", () => {
         );
         console.log("Account: ", res);
         console.log("Mint key: ", mintKey.publicKey.toString());
-        console.log("User: ", key.toString());
+        console.log("User: ", userPubKey.toString());
         // Executes our code to mint our token into our specified ATA
         await program.methods.mintToken().accounts({
             mint: mintKey.publicKey,
             tokenProgram: TOKEN_PROGRAM_ID,
             tokenAccount: associatedTokenAccount,
-            authority: key,
+            authority: userPubKey,
         })
             .rpc();
-        console.log("mint_token transaction signature ", mint_tx)
         // Get minted token amount on the ATA for our anchor wallet
         // @ts-ignore
         const minted = (await connection.getParsedAccountInfo(associatedTokenAccount)).value.data.parsed.info.tokenAmount.amount;
@@ -86,7 +85,7 @@ describe("token-contract", () => {
 
     it("Transfer Token", async () => {
         // Get anchor's wallets public key
-        const myWallet = provider.wallet.publicKey;
+        const userPubKey = provider.wallet.publicKey;
         // Wallet that will receive the token
         const toWallet: anchor.web3.Keypair = anchor.web3.Keypair.generate();
         // The ATA for a token on the To wallet(but might not exist yet)
@@ -98,16 +97,23 @@ describe("token-contract", () => {
         const mint_tx = new anchor.web3.Transaction().add(
             // Create the ATA account that is associated with our To wallet
             createAssociatedTokenAccountInstruction(
-                myWallet, toATA, toWallet.publicKey, mintKey.publicKey
+                userPubKey, toATA, toWallet.publicKey, mintKey.publicKey
             )
         );
         // Sends and create the transaction
-        await provider.sendAndConfirm(mint_tx, []);
+        const res = await provider.sendAndConfirm(mint_tx, []);
+        console.log(
+            await connection.getParsedAccountInfo(mintKey.publicKey)
+        );
+        console.log("Account: ", res);
+        console.log("Mint key: ", mintKey.publicKey.toString());
+        console.log("User: ", userPubKey.toString());
+
         // Executes our transfer smart contract
         await program.methods.transferToken().accounts({
             tokenProgram: TOKEN_PROGRAM_ID,
             from: associatedTokenAccount,
-            fromAuthority: myWallet,
+            fromAuthority: userPubKey,
             to: toATA,
         })
             .rpc();
