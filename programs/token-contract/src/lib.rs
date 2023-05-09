@@ -45,7 +45,7 @@ pub mod token_contract {
         // create the context for out tranfer request
         let cpi_ctx = CpiContext::new(cpi_program, transfer_instruction);
         // execute anchor's helper function to transfer tokens
-        anchor_spl::token::transfer(cpi_ctx, 5)?;
+        token::transfer(cpi_ctx, 5)?;
 
         Ok(())
     }
@@ -87,5 +87,6 @@ pub struct TransferToken<'info> {
     #[account(mut)]
     pub from_authority: Signer<'info>,
 }
+
 
 

@@ -9,5 +9,13 @@ token accounts.
 ```
 $ rm -rf $HOME/.cache/solana
 $ sh -c "$(curl -sSfL https://release.solana.com/v1.14.6/install)"
-$ anchor test
 ```
+
+```
+$ anchor build --arch sbf
+```
+
+```
+$ anchor test --arch sbf
+```
+
