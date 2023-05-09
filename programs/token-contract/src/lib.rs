@@ -28,7 +28,7 @@ pub mod token_contract {
         // cpi_ctx takes in two parameters, the program and the MintTo struct
         let cpi_ctx = CpiContext::new(cpi_program, cpi_accounts);
 
-        // execute anchor's helper functionto mint tokens
+        // execute anchor's helper function mint tokens
         // imported module from anchor_spl
         token::mint_to(cpi_ctx, 10)?;
         Ok(())
@@ -42,7 +42,7 @@ pub mod token_contract {
             authority: ctx.accounts.from_authority.to_account_info(),
         };
         let cpi_program = ctx.accounts.token_program.to_account_info();
-        // create the context for out tranfer request
+        // create the context for out transfer request
         let cpi_ctx = CpiContext::new(cpi_program, transfer_instruction);
         // execute anchor's helper function to transfer tokens
         token::transfer(cpi_ctx, 5)?;
@@ -67,6 +67,7 @@ pub struct MintToken<'info> {
     /// CHECK: Not a problem
     #[account(mut)]
     pub token_account: UncheckedAccount<'info>,
+
     /// CHECK: Not a problem
     #[account(mut)]
     pub authority: AccountInfo<'info>,
