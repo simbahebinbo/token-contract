@@ -1,20 +1,30 @@
 {
-  "scripts": {
-    "lint:fix": "prettier */*.js \"*/**/*{.js,.ts}\" -w",
-    "lint": "prettier */*.js \"*/**/*{.js,.ts}\" --check"
-  },
+  "name": "token-contract",
+  "version": "0.1.0",
+  "license": "(MIT OR Apache-2.0)",
   "dependencies": {
     "@coral-xyz/anchor": "^0.27.0",
     "@solana/spl-token": "^0.3.7"
   },
   "devDependencies": {
+    "chai": "^4.3.7",
+    "mocha": "^10.2.0",
+    "ts-mocha": "^10.0.0",
     "@types/bn.js": "^5.1.1",
     "@types/chai": "^4.3.5",
     "@types/mocha": "^10.0.1",
-    "chai": "^4.3.7",
-    "mocha": "^10.2.0",
-    "prettier": "^2.8.8",
-    "ts-mocha": "^10.0.0",
-    "typescript": "^5.0.4"
+    "typescript": "^5.0.4",
+    "prettier": "^2.8.8"
+  },
+  "engines": {
+    "node": ">=18.16"
+  },
+  "scripts": {
+    "lint:fix": "prettier */*.js \"*/**/*{.js,.ts}\" -w",
+    "lint": "prettier */*.js \"*/**/*{.js,.ts}\" --check",
+    "test": "anchor test",
+    "build": "anchor build",
+    "clean": "anchor clean && cargo clean"
   }
 }
+
