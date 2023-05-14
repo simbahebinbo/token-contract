@@ -22,8 +22,8 @@
   "scripts": {
     "lint:fix": "prettier */*.js \"*/**/*{.js,.ts}\" -w",
     "lint": "prettier */*.js \"*/**/*{.js,.ts}\" --check",
-    "test": "anchor test",
-    "build": "anchor build",
+    "test": "anchor test --arch sbf",
+    "build": "anchor build --arch sbf",
     "clean": "anchor clean && cargo clean"
   }
 }

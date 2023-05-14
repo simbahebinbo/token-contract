@@ -10,9 +10,9 @@ token accounts.
 
 ```
 $ rm -rf $HOME/.cache/solana
-$ sh -c "$(curl -sSfL https://release.solana.com/v1.14.6/install)"
+$ sh -c "$(curl -sSfL https://release.solana.com/v1.14.17/install)"
 $ solana --version
-solana-cli 1.14.6 (src:cfb2cbe1; feat:2390042548)
+solana-cli 1.14.17 (src:b29a37cf; feat:3488713414)
 $ solana config set --url localhost
 $ solana address
 $ solana-keygen new
